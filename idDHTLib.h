@@ -97,6 +97,7 @@ class idDHTLib
     void dhtCallback();
     int startSignal(bool useDelay);
 
+    static void dhtCallbackStatic() { objectAtInt[0]->dhtCallback(); }
 #include "idDHTLib_cb.h"
     const static pCallback pCallbackArray[MAX_INTERRUPT + 1];
     static idDHTLib * objectAtInt[MAX_INTERRUPT + 1];

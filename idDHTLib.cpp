@@ -156,8 +156,7 @@ SIGNAL(PCINT2_vect) {
 }
 
 
-const pCallback idDHTLib::pCallbackArray[] = {PFUNC_CALLBACKS};
-idDHTLib * idDHTLib::objectAtInt[MAX_INTERRUPT + 1];
+idDHTLib * idDHTLib::objectAtInt[1 + 1];
 
 idDHTLib::idDHTLib(int pin) {
   init(pin, DHT11);
@@ -348,41 +347,3 @@ float idDHTLib::getHumidity() {
   IDDHTLIB_CHECK_STATE;
   return hum;
 }
-
-float idDHTLib::getFahrenheit() {
-  IDDHTLIB_CHECK_STATE;
-  return temp * 1.8 + 32;
-}
-
-float idDHTLib::getKelvin() {
-  IDDHTLIB_CHECK_STATE;
-  return temp + 273.15;
-}
-
-// delta max = 0.6544 wrt dewPoint()
-// 5x faster than dewPoint()
-// reference: http://en.wikipedia.org/wiki/Dew_point
-double idDHTLib::getDewPoint() {
-  IDDHTLIB_CHECK_STATE;
-  double a = 17.271;
-  double b = 237.7;
-  double temp_ = (a * (double) temp) / (b + (double) temp) + log( (double) hum / 100);
-  double Td = (b * temp_) / (a - temp_);
-  return Td;
-
-}
-// dewPoint function NOAA
-// reference: http://wahiduddin.net/calc/density_algorithms.htm
-double idDHTLib::getDewPointSlow() {
-  IDDHTLIB_CHECK_STATE;
-  double A0 = 373.15 / (273.15 + (double) temp);
-  double SUM = -7.90298 * (A0 - 1);
-  SUM += 5.02808 * log10(A0);
-  SUM += -1.3816e-7 * (pow(10, (11.344 * (1 - 1 / A0))) - 1) ;
-  SUM += 8.1328e-3 * (pow(10, (-3.49149 * (A0 - 1))) - 1) ;
-  SUM += log10(1013.246);
-  double VP = pow(10, SUM - 3) * (double) hum;
-  double T = log(VP / 0.61078); // temp var
-  return (241.88 * T) / (17.558 - T);
-}
-// EOF
